@@ -1,6 +1,9 @@
 package internals
 
-import "regexp"
+import (
+	"regexp"
+	"strconv"
+)
 
 const PLEASE_REPORT_BUG_MSG string = " This indicates a bug in Schyntax. Please open an issue on github."
 
@@ -151,7 +154,7 @@ func (l *Lexer) consumeToken(tok *Token) {
 }
 
 func (l *Lexer) unexpectedText(expectedTokenTypes ...TokenType) string {
-	msg := `Unexpected input at index ` + string(l.index) + `. Was expecting `
+	msg := `Unexpected input at index ` + strconv.Itoa(l.index) + `. Was expecting `
 	if len(expectedTokenTypes) == 1 {
 		msg += expectedTokenTypes[0].Name()
 	} else {
