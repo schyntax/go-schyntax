@@ -5,8 +5,6 @@ import (
 	"strconv"
 )
 
-const PLEASE_REPORT_BUG_MSG string = " This indicates a bug in Schyntax. Please open an issue on github."
-
 // +gen stringer
 type ContextMode int
 
@@ -167,7 +165,7 @@ func (l *Lexer) unexpectedText(expectedTokenTypes ...TokenType) string {
 		}
 	}
 
-	return msg
+	return msg + "\n\n" + getStringSnippet(l.input, l.index)
 }
 
 func (l *Lexer) lexPastEndOfInput() lexMethod {

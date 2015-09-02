@@ -45,7 +45,7 @@ func (b *NodeBase) AddToken(token *Token) {
 **********************************************************************************************/
 
 type ProgramNode struct {
-	Base NodeBase
+	NodeBase
 	Groups []*GroupNode
 	Expressions []*ExpressionNode
 }
@@ -63,7 +63,7 @@ func (n *ProgramNode) AddExpression(exp *ExpressionNode) {
 **********************************************************************************************/
 
 type GroupNode struct {
-	Base NodeBase
+	NodeBase
 	Expressions []*ExpressionNode
 }
 
@@ -76,7 +76,7 @@ func (n *GroupNode) AddExpression(exp *ExpressionNode) {
 **********************************************************************************************/
 
 type ExpressionNode struct {
-	Base NodeBase
+	NodeBase
 	ExpressionType ExpressionType
 	Arguments []*ArgumentNode
 }
@@ -90,7 +90,7 @@ func (n *ExpressionNode) AddArgument(arg *ArgumentNode) {
 **********************************************************************************************/
 
 type ArgumentNode struct {
-	Base NodeBase
+	NodeBase
 	IsExclusion bool
 	Interval *IntegerValueNode
 	IsWildcard bool
@@ -109,7 +109,7 @@ func (n *ArgumentNode) IsRange() bool {
 	return n.Range != nil && n.Range.End != nil
 }
 
-func (n *ArgumentNode) Value() *ValueNode {
+func (n *ArgumentNode) Value() ValueNode {
 	if n.Range == nil {
 		return nil
 	}
@@ -118,7 +118,7 @@ func (n *ArgumentNode) Value() *ValueNode {
 }
 
 func (n *ArgumentNode) IntervalTokenIndex() int {
-	for _, tok := range n.Base.Tokens {
+	for _, tok := range n.Tokens {
 		if tok.Type == TokenTypeInterval {
 			return tok.Index
 		}
@@ -132,9 +132,9 @@ func (n *ArgumentNode) IntervalTokenIndex() int {
 **********************************************************************************************/
 
 type RangeNode struct {
-	Base NodeBase
-	Start *ValueNode
-	End *ValueNode
+	NodeBase
+	Start ValueNode
+	End ValueNode
 	IsHalfOpen bool
 }
 
@@ -156,19 +156,31 @@ type ValueNode interface {
  * IntegerValue
 **********************************************************************************************/
 
+var _ ValueNode = &IntegerValueNode{}
+
 type IntegerValueNode struct {
-	Base NodeBase
+	NodeBase
 	Value int
+}
+
+func (n *IntegerValueNode) ValueNodeType() ValueNodeType {
+	return IntegerValueType
 }
 
 /**********************************************************************************************
  * DateValue
 **********************************************************************************************/
 
+var _ ValueNode = &DateValueNode{}
+
 type DateValueNode struct {
-	Base NodeBase
+	NodeBase
 	HasYear bool
 	Year int
 	Month int
 	Day int
+}
+
+func (n *DateValueNode) ValueNodeType() ValueNodeType {
+	return DateValueType
 }
