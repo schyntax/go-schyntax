@@ -46,7 +46,7 @@ func (b *NodeBase) AddToken(token *Token) {
 
 type ProgramNode struct {
 	NodeBase
-	Groups []*GroupNode
+	Groups      []*GroupNode
 	Expressions []*ExpressionNode
 }
 
@@ -78,7 +78,7 @@ func (n *GroupNode) AddExpression(exp *ExpressionNode) {
 type ExpressionNode struct {
 	NodeBase
 	ExpressionType ExpressionType
-	Arguments []*ArgumentNode
+	Arguments      []*ArgumentNode
 }
 
 func (n *ExpressionNode) AddArgument(arg *ArgumentNode) {
@@ -92,9 +92,9 @@ func (n *ExpressionNode) AddArgument(arg *ArgumentNode) {
 type ArgumentNode struct {
 	NodeBase
 	IsExclusion bool
-	Interval *IntegerValueNode
-	IsWildcard bool
-	Range *RangeNode
+	Interval    *IntegerValueNode
+	IsWildcard  bool
+	Range       *RangeNode
 }
 
 func (n *ArgumentNode) HasInterval() bool {
@@ -133,8 +133,8 @@ func (n *ArgumentNode) IntervalTokenIndex() int {
 
 type RangeNode struct {
 	NodeBase
-	Start ValueNode
-	End ValueNode
+	Start      ValueNode
+	End        ValueNode
 	IsHalfOpen bool
 }
 
@@ -143,13 +143,15 @@ type RangeNode struct {
 **********************************************************************************************/
 
 type ValueNodeType int8
-const(
+
+const (
 	IntegerValueType ValueNodeType = iota
 	DateValueType
 )
 
 type ValueNode interface {
 	ValueNodeType() ValueNodeType
+	Index() int
 }
 
 /**********************************************************************************************
@@ -176,9 +178,9 @@ var _ ValueNode = &DateValueNode{}
 type DateValueNode struct {
 	NodeBase
 	HasYear bool
-	Year int
-	Month int
-	Day int
+	Year    int
+	Month   int
+	Day     int
 }
 
 func (n *DateValueNode) ValueNodeType() ValueNodeType {

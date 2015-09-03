@@ -12,7 +12,7 @@ func getStringSnippet(input string, index int) string {
 	afterLen := len(after)
 
 	if beforeLen > 20 {
-		before = before[beforeLen - 20:]
+		before = before[beforeLen-20:]
 		beforeLen = 20
 	}
 

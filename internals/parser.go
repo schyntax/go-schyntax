@@ -1,4 +1,5 @@
 package internals
+
 import "strconv"
 
 type Parser struct {
@@ -178,9 +179,9 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 		val.AddToken(tok)
 		val.Value = Atoi(tok.Value)
 	} else if p.isNext(TokenTypeNegativeInteger) {
-		 if expressionType != ExpressionTypeDaysOfMonth {
-			 panic("Negative values are only allowed in dayofmonth expressions.\n\n" + getStringSnippet(p.Input(), p.peek().Index))
-		 }
+		if expressionType != ExpressionTypeDaysOfMonth {
+			panic("Negative values are only allowed in dayofmonth expressions.\n\n" + getStringSnippet(p.Input(), p.peek().Index))
+		}
 
 		tok := p.advance()
 		val.AddToken(tok)
@@ -190,7 +191,7 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 		val.AddToken(tok)
 		val.Value = Atoi(tok.Value)
 	} else {
-		switch (expressionType) {
+		switch expressionType {
 		case ExpressionTypeDaysOfMonth:
 			panic(p.wrongToken(TokenTypePositiveInteger, TokenTypeNegativeInteger))
 		case ExpressionTypeDaysOfWeek:
@@ -241,23 +242,23 @@ func (p *Parser) parseDate() *DateValueNode {
 }
 
 func dayToInteger(day string) int {
-	switch (day) {
+	switch day {
 	case "SUNDAY":
-		return 1;
+		return 1
 	case "MONDAY":
-		return 2;
+		return 2
 	case "TUESDAY":
-		return 3;
+		return 3
 	case "WEDNESDAY":
-		return 4;
+		return 4
 	case "THURSDAY":
-		return 5;
+		return 5
 	case "FRIDAY":
-		return 6;
+		return 6
 	case "SATURDAY":
-		return 7;
+		return 7
 	default:
-		panic(day + " is not a day");
+		panic(day + " is not a day")
 	}
 }
 
