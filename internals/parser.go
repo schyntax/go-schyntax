@@ -1,6 +1,8 @@
 package internals
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type Parser struct {
 	lexer *Lexer
@@ -36,7 +38,7 @@ func (p *Parser) isNext(tokType TokenType) bool {
 	return p.peek().Type == tokType
 }
 
-func (p *Parser) wrongToken(expectedTokenTypes ...TokenType) string {
+func (p *Parser) wrongToken(expectedTokenTypes ...TokenType) error {
 	next := p.peek()
 
 	msg := `Unexpected token type ` + next.Type.Name() + ` at index ` + strconv.Itoa(next.Index) + `. Was expecting `
@@ -52,7 +54,7 @@ func (p *Parser) wrongToken(expectedTokenTypes ...TokenType) string {
 		}
 	}
 
-	return msg + "\n\n" + getStringSnippet(p.Input(), next.Index)
+	return newParseError(msg, p.Input(), next.Index)
 }
 
 func (p *Parser) Parse() *ProgramNode {
@@ -180,7 +182,7 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 		val.Value = Atoi(tok.Value)
 	} else if p.isNext(TokenTypeNegativeInteger) {
 		if expressionType != ExpressionTypeDaysOfMonth {
-			panic("Negative values are only allowed in dayofmonth expressions.\n\n" + getStringSnippet(p.Input(), p.peek().Index))
+			panic(newParseError("Negative values are only allowed in dayofmonth expressions.", p.Input(), p.peek().Index))
 		}
 
 		tok := p.advance()
@@ -258,7 +260,7 @@ func dayToInteger(day string) int {
 	case "SATURDAY":
 		return 7
 	default:
-		panic(day + " is not a day")
+		panic(day + " is not a day.")
 	}
 }
 

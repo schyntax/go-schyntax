@@ -70,7 +70,7 @@ func (l *Lexer) enterContext(mode ContextMode) {
 func (l *Lexer) exitContext() {
 	length := len(l.contextStack)
 	if length == 1 {
-		panic("The lexer attempted to exit the last context." + PLEASE_REPORT_BUG_MSG)
+		panic("The lexer attempted to exit the last context.")
 	}
 
 	// pop
@@ -91,7 +91,7 @@ func (l *Lexer) endOfInput() bool {
 	l.consumeWhiteSpace()
 	if l.isEndNext() {
 		if len(l.contextStack) > 1 {
-			panic("Lexer reached the end of the input while in a nested context." + PLEASE_REPORT_BUG_MSG)
+			panic("Lexer reached the end of the input while in a nested context.")
 		}
 
 		tok := &Token{}
@@ -151,7 +151,7 @@ func (l *Lexer) consumeToken(tok *Token) {
 	l.tokenQueue.Enqueue(tok)
 }
 
-func (l *Lexer) unexpectedText(expectedTokenTypes ...TokenType) string {
+func (l *Lexer) unexpectedText(expectedTokenTypes ...TokenType) error {
 	msg := `Unexpected input at index ` + strconv.Itoa(l.index) + `. Was expecting `
 	if len(expectedTokenTypes) == 1 {
 		msg += expectedTokenTypes[0].Name()
@@ -165,11 +165,11 @@ func (l *Lexer) unexpectedText(expectedTokenTypes ...TokenType) string {
 		}
 	}
 
-	return msg + "\n\n" + getStringSnippet(l.input, l.index)
+	return newParseError(msg, l.input, l.index)
 }
 
 func (l *Lexer) lexPastEndOfInput() lexMethod {
-	panic("Lexer was advanced past the end of the input." + PLEASE_REPORT_BUG_MSG)
+	panic("Lexer was advanced past the end of the input.")
 }
 
 func (l *Lexer) lexList() lexMethod {

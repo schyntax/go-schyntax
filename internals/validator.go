@@ -27,7 +27,7 @@ func (v *Validator) assertProgram(program *ProgramNode) {
 		}
 
 		if !hasExpressions {
-			panic("Schedule must contain at least one expression.")
+			panic(newParseError("Schedule must contain at least one expression.", v.Input, 0))
 		}
 	}
 
@@ -50,25 +50,24 @@ func (v *Validator) assertExpressionList(expressions []*ExpressionNode) {
 
 func (v *Validator) assertExpression(expression *ExpressionNode) {
 	if len(expression.Arguments) == 0 {
-		panic("Expression has no arguments.\n\n" + getStringSnippet(v.Input, expression.Index()))
+		panic(newParseError("Expression has no arguments.", v.Input, expression.Index()))
 	}
 
 	for _, arg := range expression.Arguments {
 		if arg.HasInterval() && arg.IntervalValue() == 0 {
-			panic(`"%0" is not a valid interval. If your intention was to include all ` +
-				expressionTypeToHumanString(expression.ExpressionType) + ` use the wildcard operator "*" instead of an interval` +
-				"\n\n" + getStringSnippet(v.Input, arg.IntervalTokenIndex()))
+			panic(newParseError(`"%0" is not a valid interval. If your intention was to include all `+
+				expressionTypeToHumanString(expression.ExpressionType)+` use the wildcard operator "*" instead of an interval`, v.Input, arg.IntervalTokenIndex()))
 		}
 
 		validator := v.getValidator(expression.ExpressionType)
 
 		if arg.IsWildcard {
 			if arg.IsExclusion && !arg.HasInterval() {
-				panic("Wildcards can't be excluded with the ! operator, except when part of an interval (using %).\n\n" + getStringSnippet(v.Input, arg.Index()))
+				panic(newParseError("Wildcards can't be excluded with the ! operator, except when part of an interval (using %).", v.Input, arg.Index()))
 			}
 		} else {
 			if arg.Range == nil || arg.Range.Start == nil {
-				panic("Expected a value or range.\n\n" + getStringSnippet(v.Input, arg.Index()))
+				panic(newParseError("Expected a value or range.", v.Input, arg.Index()))
 			}
 
 			v.assertRange(expression.ExpressionType, arg.Range, validator)
@@ -93,7 +92,7 @@ func (v *Validator) getValidator(expType ExpressionType) ValueValidator {
 	case ExpressionTypeDates:
 		return v.date
 	default:
-		panic("ExpressionType " + expType.Name() + " has not been implemented by the validator." + PLEASE_REPORT_BUG_MSG)
+		panic("ExpressionType " + expType.Name() + " has not been implemented by the validator.")
 	}
 }
 
@@ -105,7 +104,7 @@ func (v *Validator) assertRange(expType ExpressionType, rangeNode *RangeNode, va
 		validator(expType, rangeNode.End)
 
 		if rangeNode.IsHalfOpen && valuesAreEqual(expType, rangeNode.Start, rangeNode.End) {
-			panic("Start and end values of a half-open range cannot be equal.\n\n" + getStringSnippet(v.Input, rangeNode.Start.Index()))
+			panic(newParseError("Start and end values of a half-open range cannot be equal.", v.Input, rangeNode.Start.Index()))
 		}
 	}
 
@@ -116,11 +115,11 @@ func (v *Validator) assertRange(expType ExpressionType, rangeNode *RangeNode, va
 
 		if start.HasYear || end.HasYear {
 			if !start.HasYear || !end.HasYear {
-				panic("Cannot mix full and partial dates in a date range.\n\n" + getStringSnippet(v.Input, start.Index()))
+				panic(newParseError("Cannot mix full and partial dates in a date range.", v.Input, start.Index()))
 			}
 
 			if !v.isStartBeforeEnd(start, end) {
-				panic("End date of range is before the start date.\n\n" + getStringSnippet(v.Input, start.Index()))
+				panic(newParseError("End date of range is before the start date.", v.Input, start.Index()))
 			}
 		}
 	}
@@ -141,7 +140,7 @@ func (v *Validator) dayOfWeek(expType ExpressionType, value ValueNode) {
 func (v *Validator) dayOfMonth(expType ExpressionType, value ValueNode) {
 	ival := v.integerValue(expType, value, -31, 31)
 	if ival == 0 {
-		panic("Day of month cannot be zero.\n\n" + getStringSnippet(v.Input, value.Index()))
+		panic(newParseError("Day of month cannot be zero.", v.Input, value.Index()))
 	}
 }
 
@@ -150,12 +149,12 @@ func (v *Validator) date(expType ExpressionType, value ValueNode) {
 
 	if date.HasYear {
 		if date.Year < 1900 || date.Year > 2200 {
-			panic("Year " + strconv.Itoa(date.Year) + " is not a valid year. Must be between 1900 and 2200.\n\n" + getStringSnippet(v.Input, date.Index()))
+			panic(newParseError("Year "+strconv.Itoa(date.Year)+" is not a valid year. Must be between 1900 and 2200.", v.Input, date.Index()))
 		}
 	}
 
 	if date.Month < 1 || date.Month > 12 {
-		panic("Month " + strconv.Itoa(date.Month) + " is not a valid month. Must be between 1 and 12.\n\n" + getStringSnippet(v.Input, date.Index()))
+		panic(newParseError("Month "+strconv.Itoa(date.Month)+" is not a valid month. Must be between 1 and 12.", v.Input, date.Index()))
 	}
 
 	var effectiveYear int
@@ -166,7 +165,7 @@ func (v *Validator) date(expType ExpressionType, value ValueNode) {
 	}
 	days := DaysInMonth(effectiveYear, date.Month)
 	if date.Day < 1 || date.Day > days {
-		panic(strconv.Itoa(date.Day) + " is not a valid day for the month specified. Must be between 1 and " + strconv.Itoa(days) + getStringSnippet(v.Input, date.Index()))
+		panic(newParseError(strconv.Itoa(date.Day)+" is not a valid day for the month specified. Must be between 1 and "+strconv.Itoa(days), v.Input, date.Index()))
 	}
 }
 

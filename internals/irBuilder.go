@@ -64,7 +64,7 @@ func compileExpression(irGroup *IrGroup, expression *ExpressionNode) {
 		case ExpressionTypeDates:
 			compileDateArgument(irGroup, arg)
 		default:
-			panic("Expression type " + expression.ExpressionType.Name() + " not supported by the schyntax compiler." + PLEASE_REPORT_BUG_MSG)
+			panic("Expression type " + expression.ExpressionType.Name() + " not supported by the schyntax compiler.")
 		}
 	}
 }

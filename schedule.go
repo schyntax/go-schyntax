@@ -11,8 +11,20 @@ type Schedule struct {
 	ir           *internals.IrProgram
 }
 
-func New(schedule string) *Schedule {
-	sch := &Schedule{}
+func New(schedule string) (sch *Schedule, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			sch = nil
+			switch e.(type) {
+			case string:
+				err = newInternalError(e.(string), sch.OriginalText)
+			default:
+				err = e.(error)
+			}
+		}
+	}()
+
+	sch = &Schedule{}
 	sch.OriginalText = schedule
 
 	parser := internals.NewParser(schedule)
@@ -23,24 +35,24 @@ func New(schedule string) *Schedule {
 
 	sch.ir = internals.CompileAst(ast)
 
-	return sch
+	return
 }
 
-//func (s *Schedule) Next() time.Time {
-//	//
-//}
-//
-//func (s *Schedule) NextAfter(after time.Time) time.Time {
-//	//
-//}
-//
-//func (s *Schedule) Previoue() time.Time {
-//	//
-//}
-//
-//func (s *Schedule) PreviousAtOrBefore(atOrBefore time.Time) time.Time {
-//	//
-//}
+func (s *Schedule) Next() (time.Time, error) {
+	return s.getEvent(time.Now(), searchModeAfter)
+}
+
+func (s *Schedule) NextAfter(after time.Time) (time.Time, error) {
+	return s.getEvent(after, searchModeAfter)
+}
+
+func (s *Schedule) Previous() (time.Time, error) {
+	return s.getEvent(time.Now(), searchModeAtOrBefore)
+}
+
+func (s *Schedule) PreviousAtOrBefore(atOrBefore time.Time) (time.Time, error) {
+	return s.getEvent(atOrBefore, searchModeAtOrBefore)
+}
 
 type searchMode int8
 
@@ -49,10 +61,9 @@ const (
 	searchModeAfter
 )
 
-func (s *Schedule) getEvent(start time.Time, mode searchMode) time.Time {
+func (s *Schedule) getEvent(start time.Time, mode searchMode) (result time.Time, err error) {
 	start = start.UTC()
 	found := false
-	var result time.Time
 
 	for _, group := range s.ir.Groups {
 		if e, good := tryGetGroupEvent(group, start, mode); good {
@@ -64,10 +75,10 @@ func (s *Schedule) getEvent(start time.Time, mode searchMode) time.Time {
 	}
 
 	if !found {
-		panic("todo: turn this into a returned error")
+		err = &ValidTimeNotFoundError{s.OriginalText}
 	}
 
-	return result
+	return
 }
 
 func tryGetGroupEvent(group *internals.IrGroup, start time.Time, mode searchMode) (result time.Time, found bool) {

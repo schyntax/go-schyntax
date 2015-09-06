@@ -25,5 +25,5 @@ func DaysInMonth(year, month int) int {
 		return 30
 	}
 
-	panic("Invalid month " + strconv.Itoa(month) + PLEASE_REPORT_BUG_MSG)
+	panic("Invalid month " + strconv.Itoa(month))
 }
