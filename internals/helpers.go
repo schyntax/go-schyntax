@@ -1,11 +1,11 @@
 package internals
 
 import (
-	"time"
 	"strconv"
+	"time"
 )
 
-func daysInMonth(year, month int) int {
+func DaysInMonth(year, month int) int {
 	if month == 2 { // February is weird
 		if year == 0 {
 			return 29 // default to a leap year, if no year is specified

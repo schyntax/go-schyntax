@@ -17,18 +17,18 @@ func NewIrProgram() *IrProgram {
 **********************************************************************************************/
 
 type IrGroup struct {
-	Seconds []*IrIntegerRange
-	SecondsExcluded []*IrIntegerRange
-	Minutes []*IrIntegerRange
-	MinutesExcluded []*IrIntegerRange
-	Hours []*IrIntegerRange
-	HoursExcluded []*IrIntegerRange
-	DaysOfWeek []*IrIntegerRange
-	DaysOfWeekExcluded []*IrIntegerRange
-	DaysOfMonth []*IrIntegerRange
+	Seconds             []*IrIntegerRange
+	SecondsExcluded     []*IrIntegerRange
+	Minutes             []*IrIntegerRange
+	MinutesExcluded     []*IrIntegerRange
+	Hours               []*IrIntegerRange
+	HoursExcluded       []*IrIntegerRange
+	DaysOfWeek          []*IrIntegerRange
+	DaysOfWeekExcluded  []*IrIntegerRange
+	DaysOfMonth         []*IrIntegerRange
 	DaysOfMonthExcluded []*IrIntegerRange
-	Dates []*IrDateRange
-	DatesExcluded []*IrDateRange
+	Dates               []*IrDateRange
+	DatesExcluded       []*IrDateRange
 }
 
 func NewIrGroup() *IrGroup {
@@ -88,12 +88,12 @@ func (ir *IrGroup) HasDatesExcluded() bool {
 **********************************************************************************************/
 
 type IrIntegerRange struct {
-	IsRange bool
-	IsHalfOpen bool
-	IsSplit bool
-	Start int
-	End int
-	Interval int
+	IsRange     bool
+	IsHalfOpen  bool
+	IsSplit     bool
+	Start       int
+	End         int
+	Interval    int
 	HasInterval bool
 }
 
@@ -130,14 +130,14 @@ func (ir IrIntegerRange) CloneWithRevisedRange(start, end int) *IrIntegerRange {
 **********************************************************************************************/
 
 type IrDateRange struct {
-	IsRange bool
-	IsHalfOpen bool
-	IsSplit bool
-	Start *IrDate
-	End *IrDate
+	IsRange       bool
+	IsHalfOpen    bool
+	IsSplit       bool
+	Start         *IrDate
+	End           *IrDate
 	DatesHaveYear bool
-	Interval int
-	HasInterval bool
+	Interval      int
+	HasInterval   bool
 }
 
 func NewIrDateRange(start *IrDate, end *IrDate, interval int, isSplit, isHalfOpen bool) *IrDateRange {
@@ -164,13 +164,13 @@ func NewIrDateRange(start *IrDate, end *IrDate, interval int, isSplit, isHalfOpe
 **********************************************************************************************/
 
 type IrDate struct {
-	Year int
+	Year  int
 	Month int
-	Day int
+	Day   int
 }
 
 func NewIrDate(year, month, day int, hasYear bool) *IrDate {
-	ir := &IrDate{year,month,day}
+	ir := &IrDate{year, month, day}
 	if !hasYear {
 		ir.Year = 0
 	}

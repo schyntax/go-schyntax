@@ -164,7 +164,7 @@ func (v *Validator) date(expType ExpressionType, value ValueNode) {
 	} else {
 		effectiveYear = 0
 	}
-	days := daysInMonth(effectiveYear, date.Month)
+	days := DaysInMonth(effectiveYear, date.Month)
 	if date.Day < 1 || date.Day > days {
 		panic(strconv.Itoa(date.Day) + " is not a valid day for the month specified. Must be between 1 and " + strconv.Itoa(days) + getStringSnippet(v.Input, date.Index()))
 	}
