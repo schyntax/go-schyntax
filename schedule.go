@@ -19,7 +19,11 @@ func New(schedule string) (sch *Schedule, err error) {
 			case string:
 				err = newInternalError(e.(string), sch.OriginalText)
 			default:
-				err = e.(error)
+				if er, ok := e.(error); ok {
+					err = er
+				} else {
+					panic(e) // no idea what was passed to panic, just pass it along
+				}
 			}
 		}
 	}()
