@@ -39,5 +39,5 @@ func getStringSnippet(input string, index int) string {
 		afterLen = 50
 	}
 
-	return "\n\n" + string(before) + string(after) + "\n" + strings.Repeat(" ", beforeLen) + "^"
+	return "\n\n" + string(before) + string(after) + "\n" + strings.Repeat(" ", beforeLen) + "^\n"
 }

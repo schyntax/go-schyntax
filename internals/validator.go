@@ -172,9 +172,9 @@ func (v *Validator) date(expType ExpressionType, value ValueNode) {
 func (v *Validator) integerValue(expType ExpressionType, value ValueNode, min, max int) int {
 	ival := value.(*IntegerValueNode).Value
 	if ival < min || ival > max {
-		msg := fmt.Sprintf("%v cannot be %v. Value must be between %v and %v.\n\n%v",
-			expressionTypeToHumanString(expType), ival, min, max, getStringSnippet(v.Input, value.Index()))
-		panic(msg)
+		msg := fmt.Sprintf("%v cannot be %v. Value must be between %v and %v.",
+			expressionTypeToHumanString(expType), ival, min, max)
+		panic(newParseError(msg, v.Input, value.Index()))
 	}
 
 	return ival

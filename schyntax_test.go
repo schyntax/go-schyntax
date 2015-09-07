@@ -43,6 +43,15 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func TestErrors(t *testing.T) {
+	_, err := New("minutes(61)")
+	if err == nil {
+		t.Error("minutes(61) should have generated an error.")
+	} else {
+		t.Log(err)
+	}
+}
+
 func TestDates(t *testing.T) {
 	for _, check := range tests.Dates.Checks {
 		runTest(t, &check)
@@ -80,7 +89,7 @@ func TestSeconds(t *testing.T) {
 }
 
 func runTest(t *testing.T, check *prevNextCheck) {
-	t.Log("Testing " + check.Format)
+	t.Log(`Testing "` + check.Format + `" - Start ` + check.Date.String())
 
 	sch, err := New(check.Format)
 	if err != nil {

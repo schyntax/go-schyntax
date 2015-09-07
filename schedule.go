@@ -153,7 +153,7 @@ func tryGetGroupEvent(group *internals.IrGroup, start time.Time, mode searchMode
 			minute = date.Minute()
 			second = date.Second()
 		} else {
-			date = start.AddDate(0, 0, 1)
+			date = start.AddDate(0, 0, d*inc)
 
 			hour = initHour
 			minute = initMinute

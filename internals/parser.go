@@ -191,7 +191,7 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 	} else if p.isNext(TokenTypeDayLiteral) {
 		tok := p.advance()
 		val.AddToken(tok)
-		val.Value = Atoi(tok.Value)
+		val.Value = dayToInteger(tok.Value)
 	} else {
 		switch expressionType {
 		case ExpressionTypeDaysOfMonth:
