@@ -42,19 +42,55 @@ func New(schedule string) (sch *Schedule, err error) {
 	return
 }
 
-func (s *Schedule) Next() (time.Time, error) {
+func (s *Schedule) Next() time.Time {
+	t, err := s.TryNext()
+	if err != nil {
+		panic(err)
+	}
+
+	return t
+}
+
+func (s *Schedule) TryNext() (time.Time, error) {
 	return s.getEvent(time.Now(), searchModeAfter)
 }
 
-func (s *Schedule) NextAfter(after time.Time) (time.Time, error) {
+func (s *Schedule) NextAfter(after time.Time) time.Time {
+	t, err := s.TryNextAfter(after)
+	if err != nil {
+		panic(err)
+	}
+
+	return t
+}
+
+func (s *Schedule) TryNextAfter(after time.Time) (time.Time, error) {
 	return s.getEvent(after, searchModeAfter)
 }
 
-func (s *Schedule) Previous() (time.Time, error) {
+func (s *Schedule) Previous() time.Time {
+	t, err := s.TryPrevious()
+	if err != nil {
+		panic(err)
+	}
+
+	return t
+}
+
+func (s *Schedule) TryPrevious() (time.Time, error) {
 	return s.getEvent(time.Now(), searchModeAtOrBefore)
 }
 
-func (s *Schedule) PreviousAtOrBefore(atOrBefore time.Time) (time.Time, error) {
+func (s *Schedule) PreviousAtOrBefore(atOrBefore time.Time) time.Time {
+	t, err := s.TryPreviousAtOrBefore(atOrBefore)
+	if err != nil {
+		panic(err)
+	}
+
+	return t
+}
+
+func (s *Schedule) TryPreviousAtOrBefore(atOrBefore time.Time) (time.Time, error) {
 	return s.getEvent(atOrBefore, searchModeAtOrBefore)
 }
 
