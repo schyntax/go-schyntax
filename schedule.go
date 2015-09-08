@@ -6,18 +6,32 @@ import (
 	"time"
 )
 
-type Schedule struct {
-	OriginalText string
+type Schedule interface {
+	OriginalText() string
+	Next() time.Time
+	TryNext() (time.Time, error)
+	NextAfter(after time.Time) time.Time
+	TryNextAfter(after time.Time) (time.Time, error)
+	Previous() time.Time
+	TryPrevious() (time.Time, error)
+	PreviousAtOrBefore(atOrBefore time.Time) time.Time
+	TryPreviousAtOrBefore(atOrBefore time.Time) (time.Time, error)
+}
+
+var _ Schedule = &scheduleImpl{}
+
+type scheduleImpl struct {
+	originalText string
 	ir           *internals.IrProgram
 }
 
-func New(schedule string) (sch *Schedule, err error) {
+func New(schedule string) (sch Schedule, err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			sch = nil
 			switch e.(type) {
 			case string:
-				err = newInternalError(e.(string), sch.OriginalText)
+				err = newInternalError(e.(string), schedule)
 			default:
 				if er, ok := e.(error); ok {
 					err = er
@@ -28,21 +42,23 @@ func New(schedule string) (sch *Schedule, err error) {
 		}
 	}()
 
-	sch = &Schedule{}
-	sch.OriginalText = schedule
-
 	parser := internals.NewParser(schedule)
 	ast := parser.Parse()
 
 	validator := internals.Validator{schedule, ast}
 	validator.AssertValid()
 
-	sch.ir = internals.CompileAst(ast)
+	ir := internals.CompileAst(ast)
 
+	sch = &scheduleImpl{schedule, ir}
 	return
 }
 
-func (s *Schedule) Next() time.Time {
+func (s *scheduleImpl) OriginalText() string {
+	return s.originalText
+}
+
+func (s *scheduleImpl) Next() time.Time {
 	t, err := s.TryNext()
 	if err != nil {
 		panic(err)
@@ -51,11 +67,11 @@ func (s *Schedule) Next() time.Time {
 	return t
 }
 
-func (s *Schedule) TryNext() (time.Time, error) {
+func (s *scheduleImpl) TryNext() (time.Time, error) {
 	return s.getEvent(time.Now(), searchModeAfter)
 }
 
-func (s *Schedule) NextAfter(after time.Time) time.Time {
+func (s *scheduleImpl) NextAfter(after time.Time) time.Time {
 	t, err := s.TryNextAfter(after)
 	if err != nil {
 		panic(err)
@@ -64,11 +80,11 @@ func (s *Schedule) NextAfter(after time.Time) time.Time {
 	return t
 }
 
-func (s *Schedule) TryNextAfter(after time.Time) (time.Time, error) {
+func (s *scheduleImpl) TryNextAfter(after time.Time) (time.Time, error) {
 	return s.getEvent(after, searchModeAfter)
 }
 
-func (s *Schedule) Previous() time.Time {
+func (s *scheduleImpl) Previous() time.Time {
 	t, err := s.TryPrevious()
 	if err != nil {
 		panic(err)
@@ -77,11 +93,11 @@ func (s *Schedule) Previous() time.Time {
 	return t
 }
 
-func (s *Schedule) TryPrevious() (time.Time, error) {
+func (s *scheduleImpl) TryPrevious() (time.Time, error) {
 	return s.getEvent(time.Now(), searchModeAtOrBefore)
 }
 
-func (s *Schedule) PreviousAtOrBefore(atOrBefore time.Time) time.Time {
+func (s *scheduleImpl) PreviousAtOrBefore(atOrBefore time.Time) time.Time {
 	t, err := s.TryPreviousAtOrBefore(atOrBefore)
 	if err != nil {
 		panic(err)
@@ -90,7 +106,7 @@ func (s *Schedule) PreviousAtOrBefore(atOrBefore time.Time) time.Time {
 	return t
 }
 
-func (s *Schedule) TryPreviousAtOrBefore(atOrBefore time.Time) (time.Time, error) {
+func (s *scheduleImpl) TryPreviousAtOrBefore(atOrBefore time.Time) (time.Time, error) {
 	return s.getEvent(atOrBefore, searchModeAtOrBefore)
 }
 
@@ -101,7 +117,7 @@ const (
 	searchModeAfter
 )
 
-func (s *Schedule) getEvent(start time.Time, mode searchMode) (result time.Time, err error) {
+func (s *scheduleImpl) getEvent(start time.Time, mode searchMode) (result time.Time, err error) {
 	start = start.UTC()
 	found := false
 
@@ -115,7 +131,7 @@ func (s *Schedule) getEvent(start time.Time, mode searchMode) (result time.Time,
 	}
 
 	if !found {
-		err = &ValidTimeNotFoundError{s.OriginalText}
+		err = &ValidTimeNotFoundError{s.originalText}
 	}
 
 	return
