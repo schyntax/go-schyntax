@@ -108,12 +108,12 @@ func (p *Parser) parseExpression() *ExpressionNode {
 	for {
 		exp.AddArgument(p.parseArgument(expType))
 
-		if p.isNext(TokenTypeCloseParen) {
-			break
-		}
-
 		if p.isNext(TokenTypeComma) {
 			exp.AddToken(p.advance())
+		}
+
+		if p.isNext(TokenTypeCloseParen) {
+			break
 		}
 	}
 
