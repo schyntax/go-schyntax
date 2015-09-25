@@ -7,11 +7,12 @@ var _ error = &ParseError{}
 type ParseError struct {
 	message string
 	input   string
+	index   int
 }
 
 func newParseError(msg string, input string, index int) *ParseError {
 	msg += getStringSnippet(input, index)
-	return &ParseError{msg, input}
+	return &ParseError{msg, input, index}
 }
 
 func (e *ParseError) Error() string {
@@ -20,6 +21,10 @@ func (e *ParseError) Error() string {
 
 func (e *ParseError) Input() string {
 	return e.input
+}
+
+func (e *ParseError) Index() int {
+	return e.index
 }
 
 func getStringSnippet(input string, index int) string {

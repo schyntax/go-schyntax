@@ -5,6 +5,7 @@ import "github.com/schyntax/go-schyntax/internals"
 type SchyntaxError interface {
 	Error() string
 	Input() string
+	Index() int
 }
 
 var _ SchyntaxError = &internals.ParseError{}
@@ -23,6 +24,10 @@ func (e *ValidTimeNotFoundError) Input() string {
 	return e.input
 }
 
+func (e *ValidTimeNotFoundError) Index() int {
+	return 0
+}
+
 type InternalError struct {
 	message string
 	input   string
@@ -39,4 +44,8 @@ func (e *InternalError) Error() string {
 
 func (e *InternalError) Input() string {
 	return e.input
+}
+
+func (e *InternalError) Index() int {
+	return 0
 }
