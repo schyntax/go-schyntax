@@ -91,7 +91,7 @@ func (l *Lexer) endOfInput() bool {
 	l.consumeWhiteSpace()
 	if l.isEndNext() {
 		if len(l.contextStack) > 1 {
-			panic("Lexer reached the end of the input while in a nested context.")
+			panic(newParseError("Unexpected end of input.", l.input, l.index))
 		}
 
 		tok := &Token{}
@@ -230,11 +230,11 @@ func (l *Lexer) lexExpressionArgument() lexMethod {
 	l.consumeOptionalTerm(TermsNot)
 
 	if !l.consumeOptionalTerm(TermsWildcard) {
-		if l.consumeNumberDayOrDate(false) {
-			// might be a range
-			if l.consumeOptionalTerm(TermsRangeHalfOpen) || l.consumeOptionalTerm(TermsRangeInclusive) {
-				l.consumeNumberDayOrDate(true)
-			}
+		l.consumeNumberDayOrDate()
+
+		// might be a range
+		if l.consumeOptionalTerm(TermsRangeHalfOpen) || l.consumeOptionalTerm(TermsRangeInclusive) {
+			l.consumeNumberDayOrDate()
 		}
 	}
 
@@ -245,7 +245,7 @@ func (l *Lexer) lexExpressionArgument() lexMethod {
 	return l.lexList
 }
 
-func (l *Lexer) consumeNumberDayOrDate(required bool) bool {
+func (l *Lexer) consumeNumberDayOrDate() {
 	if l.consumeOptionalTerm(TermsPositiveInteger) {
 		// this might be a date - check for slashes
 		if l.consumeOptionalTerm(TermsForwardSlash) {
@@ -257,7 +257,7 @@ func (l *Lexer) consumeNumberDayOrDate(required bool) bool {
 			}
 		}
 
-		return true
+		return
 	}
 
 	if l.consumeOptionalTerm(TermsNegativeInteger) ||
@@ -268,12 +268,8 @@ func (l *Lexer) consumeNumberDayOrDate(required bool) bool {
 		l.consumeOptionalTerm(TermsThursday) ||
 		l.consumeOptionalTerm(TermsFriday) ||
 		l.consumeOptionalTerm(TermsSaturday) {
-		return true
+		return
 	}
 
-	if required {
-		panic(l.unexpectedText(TokenTypePositiveInteger, TokenTypeNegativeInteger, TokenTypeDayLiteral))
-	}
-
-	return false
+	panic(l.unexpectedText(TokenTypePositiveInteger, TokenTypeNegativeInteger, TokenTypeDayLiteral))
 }

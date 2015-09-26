@@ -179,7 +179,7 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 		// positive integer is valid for anything
 		tok := p.advance()
 		val.AddToken(tok)
-		val.Value = Atoi(tok.Value)
+		val.Value = p.parseInt(tok)
 	} else if p.isNext(TokenTypeNegativeInteger) {
 		if expressionType != ExpressionTypeDaysOfMonth {
 			panic(newParseError("Negative values are only allowed in dayofmonth expressions.", p.Input(), p.peek().Index))
@@ -187,7 +187,7 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 
 		tok := p.advance()
 		val.AddToken(tok)
-		val.Value = Atoi(tok.Value)
+		val.Value = p.parseInt(tok)
 	} else if p.isNext(TokenTypeDayLiteral) {
 		tok := p.advance()
 		val.AddToken(tok)
@@ -211,13 +211,13 @@ func (p *Parser) parseDate() *DateValueNode {
 
 	tok := p.expect(TokenTypePositiveInteger)
 	date.AddToken(tok)
-	one := Atoi(tok.Value)
+	one := p.parseInt(tok)
 
 	date.AddToken(p.expect(TokenTypeForwardSlash))
 
 	tok = p.expect(TokenTypePositiveInteger)
 	date.AddToken(tok)
-	two := Atoi(tok.Value)
+	two := p.parseInt(tok)
 
 	three := -1
 	if p.isNext(TokenTypeForwardSlash) {
@@ -225,7 +225,7 @@ func (p *Parser) parseDate() *DateValueNode {
 
 		tok = p.expect(TokenTypePositiveInteger)
 		date.AddToken(tok)
-		three = Atoi(tok.Value)
+		three = p.parseInt(tok)
 	}
 
 	if three != -1 {
@@ -264,10 +264,17 @@ func dayToInteger(day string) int {
 	}
 }
 
-func Atoi(str string) int {
-	i, err := strconv.Atoi(str)
+func (p *Parser) parseInt(tok *Token) int {
+	i, err := strconv.Atoi(tok.Value)
 	if err != nil {
-		panic(err.Error())
+		msg := "Integer value is too "
+		if i < 0 {
+			msg += "small."
+		} else {
+			msg += "large."
+		}
+
+		panic(newParseError(msg, p.Input(), tok.Index))
 	}
 
 	return i
