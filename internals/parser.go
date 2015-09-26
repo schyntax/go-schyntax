@@ -72,10 +72,10 @@ func (p *Parser) parseProgram() *ProgramNode {
 		} else {
 			panic(p.wrongToken(TokenTypeOpenCurly, TokenTypeExpressionName, TokenTypeComma))
 		}
-	}
 
-	if p.isNext(TokenTypeComma) {
-		program.AddToken(p.advance())
+		if p.isNext(TokenTypeComma) { // optional comma
+			program.AddToken(p.advance())
+		}
 	}
 
 	program.AddToken(p.expect(TokenTypeEndOfInput))
@@ -189,6 +189,10 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 		val.AddToken(tok)
 		val.Value = p.parseInt(tok)
 	} else if p.isNext(TokenTypeDayLiteral) {
+		if expressionType != ExpressionTypeDaysOfWeek {
+			panic(newParseError("Unexpected day literal. Day literals are only allowed in daysOfWeek expressions.", p.Input(), p.peek().Index))
+		}
+
 		tok := p.advance()
 		val.AddToken(tok)
 		val.Value = dayToInteger(tok.Value)
