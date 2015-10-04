@@ -10,22 +10,23 @@ import (
 )
 
 type testsData struct {
-	Dates          expressionTests
-	DaysOfMonth    expressionTests
-	DaysOfWeek     expressionTests
-	Hours          expressionTests
-	Minutes        expressionTests
-	Seconds        expressionTests
-	SyntaxErrors   expressionTests
-	ArgumentErrors expressionTests
-	Commas         expressionTests
+	TestsVersion int
+	Suites       suites
 }
 
-type expressionTests struct {
-	Checks []prevNextCheck
+type suites struct {
+	Dates          []check
+	DaysOfMonth    []check
+	DaysOfWeek     []check
+	Hours          []check
+	Minutes        []check
+	Seconds        []check
+	SyntaxErrors   []check
+	ArgumentErrors []check
+	Commas         []check
 }
 
-type prevNextCheck struct {
+type check struct {
 	Format          string
 	Date            time.Time
 	Prev            *time.Time
@@ -48,70 +49,61 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestErrors(t *testing.T) {
-	_, err := New("minutes(61)")
-	if err == nil {
-		t.Error("minutes(61) should have generated an error.")
-	} else {
-		t.Log(err)
-	}
-}
-
 func TestDates(t *testing.T) {
-	for _, check := range tests.Dates.Checks {
+	for _, check := range tests.Suites.Dates {
 		runTest(t, &check)
 	}
 }
 
 func TestDaysOfMonth(t *testing.T) {
-	for _, check := range tests.DaysOfMonth.Checks {
+	for _, check := range tests.Suites.DaysOfMonth {
 		runTest(t, &check)
 	}
 }
 
 func TestDaysOfWeek(t *testing.T) {
-	for _, check := range tests.DaysOfWeek.Checks {
+	for _, check := range tests.Suites.DaysOfWeek {
 		runTest(t, &check)
 	}
 }
 
 func TestHours(t *testing.T) {
-	for _, check := range tests.Hours.Checks {
+	for _, check := range tests.Suites.Hours {
 		runTest(t, &check)
 	}
 }
 
 func TestMinutes(t *testing.T) {
-	for _, check := range tests.Minutes.Checks {
+	for _, check := range tests.Suites.Minutes {
 		runTest(t, &check)
 	}
 }
 
 func TestSeconds(t *testing.T) {
-	for _, check := range tests.Seconds.Checks {
+	for _, check := range tests.Suites.Seconds {
 		runTest(t, &check)
 	}
 }
 
 func TestSyntaxErrors(t *testing.T) {
-	for _, check := range tests.SyntaxErrors.Checks {
+	for _, check := range tests.Suites.SyntaxErrors {
 		runTest(t, &check)
 	}
 }
 
 func TestArgumentErrors(t *testing.T) {
-	for _, check := range tests.ArgumentErrors.Checks {
+	for _, check := range tests.Suites.ArgumentErrors {
 		runTest(t, &check)
 	}
 }
 
 func TestCommas(t *testing.T) {
-	for _, check := range tests.Commas.Checks {
+	for _, check := range tests.Suites.Commas {
 		runTest(t, &check)
 	}
 }
 
-func runTest(t *testing.T, check *prevNextCheck) {
+func runTest(t *testing.T, check *check) {
 	t.Log(`Testing "` + check.Format + `" - Start ` + check.Date.String())
 
 	sch, err := New(check.Format)
