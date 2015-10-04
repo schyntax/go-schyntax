@@ -11,6 +11,7 @@ import (
 
 type testsData struct {
 	TestsVersion int
+	Hash         string
 	Suites       suites
 }
 
