@@ -9,7 +9,7 @@
 To create a new `Schedule` interface:
 
 ```go
-schedule, err := schyntax.New("min(*%2)");
+schedule, err := schyntax.New(`min(*%2)`);
 ```
 
 You'll need the import statement `import "github.com/schyntax/go-schyntax"`.
