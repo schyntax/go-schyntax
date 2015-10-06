@@ -8,13 +8,9 @@ import (
 
 type Schedule interface {
 	OriginalText() string
-	NextOrPanic() time.Time
 	Next() (time.Time, error)
-	NextAfterOrPanic(after time.Time) time.Time
 	NextAfter(after time.Time) (time.Time, error)
-	PreviousOrPanic() time.Time
 	Previous() (time.Time, error)
-	PreviousAtOrBeforeOrPanic(atOrBefore time.Time) time.Time
 	PreviousAtOrBefore(atOrBefore time.Time) (time.Time, error)
 }
 
@@ -58,52 +54,16 @@ func (s *scheduleImpl) OriginalText() string {
 	return s.originalText
 }
 
-func (s *scheduleImpl) NextOrPanic() time.Time {
-	t, err := s.Next()
-	if err != nil {
-		panic(err)
-	}
-
-	return t
-}
-
 func (s *scheduleImpl) Next() (time.Time, error) {
 	return s.getEvent(time.Now(), searchModeAfter)
-}
-
-func (s *scheduleImpl) NextAfterOrPanic(after time.Time) time.Time {
-	t, err := s.NextAfter(after)
-	if err != nil {
-		panic(err)
-	}
-
-	return t
 }
 
 func (s *scheduleImpl) NextAfter(after time.Time) (time.Time, error) {
 	return s.getEvent(after, searchModeAfter)
 }
 
-func (s *scheduleImpl) PreviousOrPanic() time.Time {
-	t, err := s.Previous()
-	if err != nil {
-		panic(err)
-	}
-
-	return t
-}
-
 func (s *scheduleImpl) Previous() (time.Time, error) {
 	return s.getEvent(time.Now(), searchModeAtOrBefore)
-}
-
-func (s *scheduleImpl) PreviousAtOrBeforeOrPanic(atOrBefore time.Time) time.Time {
-	t, err := s.PreviousAtOrBefore(atOrBefore)
-	if err != nil {
-		panic(err)
-	}
-
-	return t
 }
 
 func (s *scheduleImpl) PreviousAtOrBefore(atOrBefore time.Time) (time.Time, error) {
