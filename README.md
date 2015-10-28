@@ -1,4 +1,5 @@
 # Go Schyntax
+[![Build Status](https://travis-ci.org/schyntax/go-schyntax.svg?branch=master)](https://travis-ci.org/schyntax/go-schyntax)
 
 [Schyntax](https://github.com/schyntax/schyntax) is a domain-specific language for defining event schedules in a terse, but readable, format. For example, if you want something to run every five minutes during work hours on weekdays, you could write `days(mon..fri) hours(9..<17) min(*%5)`. This project is official implementation of Schyntax for Go.
 

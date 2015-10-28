@@ -2,29 +2,19 @@ package schyntax
 
 import (
 	"encoding/json"
-	"github.com/schyntax/go-schyntax/internals"
 	"io/ioutil"
+	"log"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/schyntax/go-schyntax/internals"
 )
 
 type testsData struct {
 	TestsVersion int
 	Hash         string
-	Suites       suites
-}
-
-type suites struct {
-	Dates          []check
-	DaysOfMonth    []check
-	DaysOfWeek     []check
-	Hours          []check
-	Minutes        []check
-	Seconds        []check
-	SyntaxErrors   []check
-	ArgumentErrors []check
-	Commas         []check
+	Suites       map[string][]*check
 }
 
 type check struct {
@@ -38,69 +28,25 @@ type check struct {
 var tests testsData
 
 func TestMain(m *testing.M) {
+
 	file, err := ioutil.ReadFile("tests.json")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	if err = json.Unmarshal(file, &tests); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	os.Exit(m.Run())
 }
 
-func TestDates(t *testing.T) {
-	for _, check := range tests.Suites.Dates {
-		runTest(t, &check)
-	}
-}
-
-func TestDaysOfMonth(t *testing.T) {
-	for _, check := range tests.Suites.DaysOfMonth {
-		runTest(t, &check)
-	}
-}
-
-func TestDaysOfWeek(t *testing.T) {
-	for _, check := range tests.Suites.DaysOfWeek {
-		runTest(t, &check)
-	}
-}
-
-func TestHours(t *testing.T) {
-	for _, check := range tests.Suites.Hours {
-		runTest(t, &check)
-	}
-}
-
-func TestMinutes(t *testing.T) {
-	for _, check := range tests.Suites.Minutes {
-		runTest(t, &check)
-	}
-}
-
-func TestSeconds(t *testing.T) {
-	for _, check := range tests.Suites.Seconds {
-		runTest(t, &check)
-	}
-}
-
-func TestSyntaxErrors(t *testing.T) {
-	for _, check := range tests.Suites.SyntaxErrors {
-		runTest(t, &check)
-	}
-}
-
-func TestArgumentErrors(t *testing.T) {
-	for _, check := range tests.Suites.ArgumentErrors {
-		runTest(t, &check)
-	}
-}
-
-func TestCommas(t *testing.T) {
-	for _, check := range tests.Suites.Commas {
-		runTest(t, &check)
+func TestSuites(t *testing.T) {
+	for name, checks := range tests.Suites {
+		t.Logf("-----SUITE %s-----", name)
+		for _, check := range checks {
+			runTest(t, check)
+		}
 	}
 }
 
