@@ -89,6 +89,8 @@ func (v *Validator) getValidator(expType ExpressionType) ValueValidator {
 		return v.dayOfWeek
 	case ExpressionTypeDaysOfMonth:
 		return v.dayOfMonth
+	case ExpressionTypeDaysOfYear:
+		return v.dayOfYear
 	case ExpressionTypeDates:
 		return v.date
 	default:
@@ -141,6 +143,13 @@ func (v *Validator) dayOfMonth(expType ExpressionType, value ValueNode) {
 	ival := v.integerValue(expType, value, -31, 31)
 	if ival == 0 {
 		panic(newParseError("Day of month cannot be zero.", v.Input, value.Index()))
+	}
+}
+
+func (v *Validator) dayOfYear(expType ExpressionType, value ValueNode) {
+	ival := v.integerValue(expType, value, -366, 366)
+	if ival == 0 {
+		panic(newParseError("Day of year cannot be zero.", v.Input, value.Index()))
 	}
 }
 
@@ -229,6 +238,8 @@ func (v *Validator) isStartBeforeEnd(start, end *DateValueNode) bool {
 
 func expressionTypeToHumanString(expType ExpressionType) string {
 	switch expType {
+	case ExpressionTypeDaysOfYear:
+		return "days of year"
 	case ExpressionTypeDaysOfMonth:
 		return "days of the month"
 	case ExpressionTypeDaysOfWeek:

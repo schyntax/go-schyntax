@@ -8,9 +8,9 @@ import (
 	"fmt"
 )
 
-const _ExpressionType_name = "ExpressionTypeIntervalValueExpressionTypeSecondsExpressionTypeMinutesExpressionTypeHoursExpressionTypeDaysOfWeekExpressionTypeDaysOfMonthExpressionTypeDates"
+const _ExpressionType_name = "ExpressionTypeIntervalValueExpressionTypeSecondsExpressionTypeMinutesExpressionTypeHoursExpressionTypeDaysOfWeekExpressionTypeDaysOfMonthExpressionTypeDaysOfYearExpressionTypeDates"
 
-var _ExpressionType_index = [...]uint8{0, 27, 48, 69, 88, 112, 137, 156}
+var _ExpressionType_index = [...]uint8{0, 27, 48, 69, 88, 112, 137, 161, 180}
 
 func (i ExpressionType) String() string {
 	i -= 1

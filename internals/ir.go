@@ -27,6 +27,8 @@ type IrGroup struct {
 	DaysOfWeekExcluded  []*IrIntegerRange
 	DaysOfMonth         []*IrIntegerRange
 	DaysOfMonthExcluded []*IrIntegerRange
+	DaysOfYear          []*IrIntegerRange
+	DaysOfYearExcluded  []*IrIntegerRange
 	Dates               []*IrDateRange
 	DatesExcluded       []*IrDateRange
 }
@@ -73,6 +75,14 @@ func (ir *IrGroup) HasDaysOfMonth() bool {
 
 func (ir *IrGroup) HasDaysOfMonthExcluded() bool {
 	return len(ir.DaysOfMonthExcluded) > 0
+}
+
+func (ir *IrGroup) HasDaysOfYear() bool {
+	return len(ir.DaysOfYear) > 0
+}
+
+func (ir *IrGroup) HasDaysOfYearExcluded() bool {
+	return len(ir.DaysOfYearExcluded) > 0
 }
 
 func (ir *IrGroup) HasDates() bool {

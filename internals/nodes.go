@@ -10,6 +10,7 @@ const (
 	ExpressionTypeHours
 	ExpressionTypeDaysOfWeek
 	ExpressionTypeDaysOfMonth
+	ExpressionTypeDaysOfYear
 	ExpressionTypeDates
 )
 

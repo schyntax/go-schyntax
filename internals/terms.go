@@ -34,6 +34,7 @@ var TermsMinutes *Terminal = &Terminal{TokenTypeExpressionName, "", regexp.MustC
 var TermsHours *Terminal = &Terminal{TokenTypeExpressionName, "", regexp.MustCompile(`(?i)^(h|hour|hours|hourofday|hoursofday)(?:\b)`), ExpressionTypeHours}
 var TermsDaysOfWeek *Terminal = &Terminal{TokenTypeExpressionName, "", regexp.MustCompile(`(?i)^(day|days|dow|dayofweek|daysofweek)(?:\b)`), ExpressionTypeDaysOfWeek}
 var TermsDaysOfMonth *Terminal = &Terminal{TokenTypeExpressionName, "", regexp.MustCompile(`(?i)^(dom|dayofmonth|daysofmonth)(?:\b)`), ExpressionTypeDaysOfMonth}
+var TermsDaysOfYear *Terminal = &Terminal{TokenTypeExpressionName, "", regexp.MustCompile(`(?i)^(doy|dayofyear|daysofyear)(?:\b)`), ExpressionTypeDaysOfYear}
 var TermsDates *Terminal = &Terminal{TokenTypeExpressionName, "", regexp.MustCompile(`(?i)^(date|dates)(?:\b)`), ExpressionTypeDates}
 
 type Terminal struct {

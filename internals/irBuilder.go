@@ -61,6 +61,8 @@ func compileExpression(irGroup *IrGroup, expression *ExpressionNode) {
 			compileDaysOfWeekArgument(irGroup, arg)
 		case ExpressionTypeDaysOfMonth:
 			compileDaysOfMonthArgument(irGroup, arg)
+		case ExpressionTypeDaysOfYear:
+			compileDaysOfYearArgument(irGroup, arg)
 		case ExpressionTypeDates:
 			compileDateArgument(irGroup, arg)
 		default:
@@ -154,6 +156,15 @@ func compileDaysOfMonthArgument(irGroup *IrGroup, arg *ArgumentNode) {
 		irGroup.DaysOfMonthExcluded = append(irGroup.DaysOfMonthExcluded, irArg)
 	} else {
 		irGroup.DaysOfMonth = append(irGroup.DaysOfMonth, irArg)
+	}
+}
+
+func compileDaysOfYearArgument(irGroup *IrGroup, arg *ArgumentNode) {
+	irArg := compileIntegerArgument(arg, 1, 366)
+	if arg.IsExclusion {
+		irGroup.DaysOfYearExcluded = append(irGroup.DaysOfYearExcluded, irArg)
+	} else {
+		irGroup.DaysOfYear = append(irGroup.DaysOfYear, irArg)
 	}
 }
 

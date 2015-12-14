@@ -114,7 +114,7 @@ func tryGetGroupEvent(group *internals.IrGroup, start time.Time, mode searchMode
 	var hourCount, minuteCount, secondCount int
 
 	// todo: make the length of the search configurable
-	for d := 0; d < 367; d++ {
+	for d := 0; d < 4*365; d++ {
 		var date time.Time
 		var hour, minute, second int
 		if d == 0 {
@@ -138,6 +138,7 @@ func tryGetGroupEvent(group *internals.IrGroup, start time.Time, mode searchMode
 
 		year := date.Year()
 		month := int(date.Month())
+		dayOfYear := date.YearDay()
 		dayOfWeek := int(date.Weekday()) + 1 // Weekday is zero-indexed
 		dayOfMonth := date.Day()
 
@@ -159,6 +160,29 @@ func tryGetGroupEvent(group *internals.IrGroup, start time.Time, mode searchMode
 		if group.HasDatesExcluded() {
 			for _, r := range group.DatesExcluded {
 				if inDateRange(r, year, month, dayOfMonth) {
+					goto CONTINUE_DATE_LOOP
+				}
+			}
+		}
+
+		// check if date is an applicable day of year
+		if group.HasDaysOfYear() {
+			applicable := false
+			for _, r := range group.DaysOfYear {
+				if inDayOfYearRange(r, year, dayOfYear) {
+					applicable = true
+					break
+				}
+			}
+
+			if !applicable {
+				goto CONTINUE_DATE_LOOP
+			}
+		}
+
+		if group.HasDaysOfYearExcluded() {
+			for _, r := range group.DaysOfYearExcluded {
+				if inDayOfYearRange(r, year, dayOfYear) {
 					goto CONTINUE_DATE_LOOP
 				}
 			}
@@ -399,6 +423,28 @@ func compareMonthAndDay(monthA, dayA, monthB, dayB int) int {
 	}
 
 	return -1
+}
+
+func inDayOfYearRange(r *internals.IrIntegerRange, year, dayOfYear int) bool {
+	if r.Start < 0 || (r.IsRange && r.End < 0) {
+		// one of the range values is negative, so we need to convert it to a positive
+		daysInYear := internals.DaysInYear(year)
+
+		revisedStart := r.Start
+		if revisedStart < 0 {
+			revisedStart = daysInYear + revisedStart + 1
+		}
+
+		revisedEnd := r.End
+		if revisedEnd < 0 {
+			revisedEnd = daysInYear + revisedEnd + 1
+		}
+
+		r = r.CloneWithRevisedRange(revisedStart, revisedEnd)
+	}
+
+	daysInPreviousYear := internals.DaysInYear(year - 1)
+	return inIntegerRange(r, dayOfYear, daysInPreviousYear)
 }
 
 func inDayOfMonthRange(r *internals.IrIntegerRange, year, month, dayOfMonth int) bool {

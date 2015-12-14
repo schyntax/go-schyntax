@@ -181,8 +181,8 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 		val.AddToken(tok)
 		val.Value = p.parseInt(tok)
 	} else if p.isNext(TokenTypeNegativeInteger) {
-		if expressionType != ExpressionTypeDaysOfMonth {
-			panic(newParseError("Negative values are only allowed in dayofmonth expressions.", p.Input(), p.peek().Index))
+		if expressionType != ExpressionTypeDaysOfMonth && expressionType != ExpressionTypeDaysOfYear {
+			panic(newParseError("Negative values are only allowed in dayofmonth and dayofyear expressions.", p.Input(), p.peek().Index))
 		}
 
 		tok := p.advance()
@@ -198,7 +198,7 @@ func (p *Parser) parseIntegerValue(expressionType ExpressionType) *IntegerValueN
 		val.Value = dayToInteger(tok.Value)
 	} else {
 		switch expressionType {
-		case ExpressionTypeDaysOfMonth:
+		case ExpressionTypeDaysOfMonth, ExpressionTypeDaysOfYear:
 			panic(p.wrongToken(TokenTypePositiveInteger, TokenTypeNegativeInteger))
 		case ExpressionTypeDaysOfWeek:
 			panic(p.wrongToken(TokenTypePositiveInteger, TokenTypeDayLiteral))

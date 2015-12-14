@@ -214,6 +214,7 @@ func (l *Lexer) lexExpression() lexMethod {
 		l.consumeOptionalTerm(TermsHours) ||
 		l.consumeOptionalTerm(TermsDaysOfWeek) ||
 		l.consumeOptionalTerm(TermsDaysOfMonth) ||
+		l.consumeOptionalTerm(TermsDaysOfYear) ||
 		l.consumeOptionalTerm(TermsDates)
 
 	if consumedExpName {
