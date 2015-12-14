@@ -59,11 +59,10 @@ func runTest(t *testing.T, check *check) {
 			// we were expecting an error
 			if parseError, ok := err.(*internals.ParseError); ok {
 				if parseError.Index() == *check.ParseErrorIndex {
-					t.Log("Expected Parse Error ✓")
+					logNonVerbose(t, "Expected Parse Error ✓")
 				} else {
 					t.Errorf("Wrong parse error index. Expected: %d. Actual: %d.\n", *check.ParseErrorIndex, parseError.Error())
 				}
-
 				return
 			}
 		}
@@ -81,7 +80,7 @@ func runTest(t *testing.T, check *check) {
 
 	if pErr != nil {
 		if _, ok := pErr.(*ValidTimeNotFoundError); ok && check.Prev == nil {
-			t.Log("Prev ✓ (ValidTimeNotFoundError)")
+			logNonVerbose(t, "Prev ✓ (ValidTimeNotFoundError)")
 		} else {
 			t.Error(pErr)
 		}
@@ -90,14 +89,14 @@ func runTest(t *testing.T, check *check) {
 	} else if !prev.Equal(*check.Prev) {
 		t.Error("Expected: " + check.Prev.String() + ", Actual: " + prev.String())
 	} else {
-		t.Log("Prev ✓")
+		logNonVerbose(t, "Prev ✓")
 	}
 
 	next, nErr := sch.NextAfter(check.Date)
 
 	if nErr != nil {
 		if _, ok := nErr.(*ValidTimeNotFoundError); ok && check.Next == nil {
-			t.Log("Prev ✓ (ValidTimeNotFoundError)")
+			logNonVerbose(t, "Prev ✓ (ValidTimeNotFoundError)")
 		} else {
 			t.Error(nErr)
 		}
@@ -106,7 +105,13 @@ func runTest(t *testing.T, check *check) {
 	} else if !next.Equal(*check.Next) {
 		t.Error("Expected: " + check.Next.String() + ", Actual: " + next.String())
 	} else {
-		t.Log("Next ✓")
+		logNonVerbose(t, "Next ✓")
 	}
 
+}
+
+func logNonVerbose(t *testing.T, msg string) {
+	if testing.Verbose() {
+		t.Log(msg)
+	}
 }
