@@ -44,3 +44,5 @@ prevEventTime, err := schedule.Previous();
 ```
 
 There is also a `PreviousAtOrBefore(atOrBefore time.Time)` method.
+
+> Version of Schyntax Implemented: [1.0.1](https://github.com/schyntax/schyntax/tree/v1.0.1)
